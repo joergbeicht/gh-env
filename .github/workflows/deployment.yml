@@ -1,13 +1,19 @@
+# Vorweg wurde eine freie Cloud Mongo DB erstellt
 name: Website Deployment
 on:
   push:
     branches:
       - main
       - dev
+# Hier werden globale env Variablen über alle Jobs definiert
 env:
     MONGODB_DB_NAME: gha-demo
 jobs:
     test:
+        # env Variablen werden nur in diesem Job benutzt
+        # Die Variablen werden hier als secret gesetzt
+        # https://github.com/joergbeicht/gh-env/settings/secrets/actions
+        # secrets ist wieder ein Context Object
         env:
             MONGODMONGODB_CLUSTER_ADDRESS: cluster0.ip13jd1.mongodb.net
             MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
@@ -24,11 +30,17 @@ jobs:
               key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
           - name: Install dependencies
             run: npm ci
+          # Hier MUSS zuerst ein Webserver gestartet werden damit die test laufen können! 
+          # Und der Port obern als Env-Variable gesetzt
+          # Die Syntax kann unterschiedlich sein auf mac, windows, linux, ...          
+          # Wir nutzen eine Linux Maschinedeswegen runs-on: ubuntu-latest deswegen $PORT
           - name: Run server
             run: npm start & npx wait-on http://127.0.0.1:$PORT
           - name: Run tests
             run: npm test
           - name: Output information
+            # {{ env.MONGODB_USERNAME }} das ist eine andere Variante einer env-Variable
+            # DU kannst auch $PORT benutzen beide Varianten sind möglich
             run: | 
                 echo "MONGODB_USERNAME: ${{ env.MONGODB_USERNAME }}"
     deploy:
