@@ -14,6 +14,22 @@ jobs:
         # Die Variablen werden hier als secret gesetzt
         # https://github.com/joergbeicht/gh-env/settings/secrets/actions
         # secrets ist wieder ein Context Object
+        # ACHTUNG bzgl. secrets:
+        # Wenn wir z.B. mehr als eine DB haben mit unterscheidlichen 
+        # MONGODMONGODB_CLUSTER_ADDRESS, MONGODB_USERNAME und MONGODB_PASSWORD
+        # dann müssen wir unterschiedliche secrets erstellen also z.B.
+        # secrets.MONGODB_USERNAME_TEST, secrets.MONGODB_PASSWORD_TEST und
+        # secrets.MONGODB_USERNAME_PROD, secrets.MONGODB_PASSWORD_PROD usw.
+        # LÖSUNG Environments 
+        # dann kann secrets.MONGODB_USERNAME und secrets.MONGODB_PASSWORD 
+        # als eine Variable genutzt werden
+        # Erstellt in Evoironments https://github.com/joergbeicht/gh-env/settings/environments
+        # ein environment mit dem Namen testing
+        # environment: testing
+        # dann nutzt der job automatisch die secrets des Environment!
+        # Hinweis: Die kostenlose Nutzung der mongo db ist abgelaufen.
+        # Das sit aber kein grosses Problem, da die DB nicht benötigt wird um das Bespiel
+        # zu verstehen
         env:
             MONGODMONGODB_CLUSTER_ADDRESS: cluster0.ip13jd1.mongodb.net
             MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
